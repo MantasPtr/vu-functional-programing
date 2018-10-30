@@ -10,6 +10,9 @@ module Parser where
         deriving Show
 
 
+    move2 :: String -> Either String (Maybe [String])
+    move2 msg = if checkIfGameOver msg then Right Nothing else move msg
+
     move :: String -> Either String (Maybe [String])
     move msg = do
         pMsg <- process msg
@@ -18,7 +21,7 @@ module Parser where
     process msg = do
         (coordinates, leftover1)    <- parse1 msg
         (hitMiss, leftover2)        <- parse2 leftover1
-        (prevExist, leftover)            <- parse3 leftover2
+        (prevExist, leftover)       <- parse3 leftover2
         (prev)                      <- if prevExist then process leftover else Right Nothing
         return $ Just Message {coord = coordinates, result = hitMiss, prev = prev}
 
@@ -105,7 +108,7 @@ module Parser where
             next_word = take word_len msg
             leftover= drop word_len msg
         in 
-            if next_word == s then Right leftover else Left $ "Cannot skip string " ++ s ++ ". Message = " ++ msg
+            if next_word == s then Right leftover else Left $ "Wrong input. Expected starting with: '" ++ s ++ "'. Actual message = " ++ msg
             
 
     get_start_while :: (Char -> Bool) -> String -> (String, String) 
@@ -120,6 +123,10 @@ module Parser where
     get_word s = Right $ get_start_while isLetter s
     get_number :: String -> Either String (String, String)
     get_number s = Right $ get_start_while isDigit s
+
+
+    checkIfGameOver :: String -> Bool 
+    checkIfGameOver msg = startEquals msg "[\"coord\",[]" 
     
     -- splitToPlayers:: Message -> (Maybe Message,Maybe Message) -- -> (Maybe Message,Maybe Message)
     -- splitToPlayers msg = if isNothing previous then (Just msg,Nothing) else (Just msg {prev = snd (splitToPlayers (fromJust previous))}, fst (splitToPlayers (fromJust previous)))
