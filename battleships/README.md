@@ -1,1 +1,6 @@
-# battleships
+# Battleships
+
+
+## Tests
+
+```stack test```
