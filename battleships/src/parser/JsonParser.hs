@@ -2,14 +2,24 @@ module JsonParser where
     import Data.Char
     import Data.List
     
-    parse1 :: String -> Either String ((String,String),String)
-    parse1 msg = do
+    parse1 :: String -> Either String (Maybe (String,String),String)
+    parse1 msg =
+        if startEquals msg "[\"coord\",[]," then 
+            do
+                leftover <- skipStringE msg "[\"coord\",[],"
+                return (Nothing, leftover)
+        else
+            parseCoordinates msg
+
+    parseCoordinates :: String -> Either String (Maybe (String,String),String)
+    parseCoordinates msg = do
         skipped_beginning   <- skipStrings ["[", "\"coord\"", ",", "[", "\""] msg
         (letter, leftover1) <- getWord skipped_beginning
         skipped_separator   <- skipStrings ["\"", ",", "\""] leftover1
         (number, leftover2) <- getNumber skipped_separator
         leftover3           <- skipStrings ["\"", "]", ","] leftover2
-        return ((letter, number), leftover3)
+        return (Just (letter, number), leftover3)
+    
 
     parse2 :: String -> Either String (Maybe Bool,String)
     parse2 msg = do
