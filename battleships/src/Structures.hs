@@ -1,4 +1,4 @@
-module Structures( Message(..), GameInfo(..),PlayerEnum(..)) where
+module Structures( Message(..), GameInfo(..),PlayerEnum(..), getPlayer) where
 
     data Message = NewMessage {
         coord :: Maybe (String, String) , 
@@ -12,3 +12,9 @@ module Structures( Message(..), GameInfo(..),PlayerEnum(..)) where
         } deriving (Show, Eq)
 
     data PlayerEnum = A | B deriving (Show, Eq)
+
+
+    getPlayer:: String -> PlayerEnum
+    getPlayer player = case player of 
+        "A" -> A
+        "B" -> B 

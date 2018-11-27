@@ -1,7 +1,9 @@
-module HttpConnector(makeUrl) where 
+module HttpConnector(makeUrl, httpGet, httpPost) where 
     import Structures
-
-    import Network.HTTP.Simple
+    import Data.ByteString.Lazy.Char8 as LBString
+    import Data.ByteString.Char8 as BString
+    import Network.Wreq
+    import Control.Lens
     import Network.HTTP.Types.Header
 
     baseUrl :: String
@@ -10,14 +12,17 @@ module HttpConnector(makeUrl) where
     makeUrl :: GameInfo -> String;
     makeUrl (NewGameInfo gameId player) = baseUrl ++ "/game/" ++ gameId ++ "/player/" ++ show player 
 
-    main :: IO ()
-    main = do
-        -- manager <- newManager defaultManagerSettings
-    
-        request <- parseRequest "GET http://httpbin.org/get"
-        let contentTypeHeader = (hContentType, "application/json+nomaps")
-        let requestWithHeaders = setRequestHeaders [contentTypeHeader] request
-        response <- httpBS requestWithHeaders 
-    
-        putStrLn $ "The status code was: " ++ show (getResponseStatusCode response)
-        print $ show $ getResponseBody response
+    httpGet :: String -> IO (String)
+    httpGet url = do
+        response <- getWith getHeaders url
+        return $ LBString.unpack $ response ^. responseBody
+
+    httpPost :: String -> String -> IO (Int)
+    httpPost url body = do
+        response <- postWith postHeaders url (BString.pack body)
+        return $ (response ^. responseStatus) ^. statusCode
+
+    getHeaders = defaults 
+        & header hAccept .~ [BString.pack "application/json+nomaps"] 
+
+    postHeaders = defaults & header hContentType .~ [BString.pack "application/json+nomaps"]

@@ -1,6 +1,14 @@
-module Lib( someFunc) where
+module Lib( battle) where
 
-import MessageParser
+import Player(play)
+import Data.Maybe
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+battle :: IO ()
+battle = do
+    putStrLn "BATTLESHIPS"
+    putStrLn "Were shall you fight?"
+    gameId <- getLine
+    putStrLn "Will you a player A or B?"
+    name <- getLine
+    result <- play gameId name
+    putStrLn $ "Game over. Result:" ++ result

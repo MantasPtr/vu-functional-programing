@@ -17,14 +17,17 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/battleships#readme>
+description:         Please see the README on GitHub at <https://github.com/mantasPtr/battleships#readme>
 
 dependencies:
 - base >= 4.7 && < 5
 - tasty
 - tasty-hunit
-- http-conduit
+- bytestring
+- wreq
+- lens
 - http-types
+- random
 
 library:
   source-dirs: 

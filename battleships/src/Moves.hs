@@ -1,11 +1,24 @@
-module Moves where
+module Moves(shipLocations, nextHit, wasHit) where
+    import System.Random
+
+    shipLocations = [("A","1"),("A","2"),("A","3"),("A","4"),("C","1"),("C","2"),("C","3"),("C","5"),("C","6"),("C","7"),
+        ("E","1"),("E","2"),("E","4"),("E","5"),("E","7"),("E","8"),("G","1"),("G","3"),("G","5"),("G","7")]
+
+    nextHit:: IO (String, String)
+    nextHit = do
+        letter <- getStdRandom (randomR ('A','J')) 
+        number <- getStdRandom (randomR ( 1:: Int,10)) 
+        return ([letter], show number)
+
+    wasHit:: (String, String) -> Bool
+    wasHit shot = shot `elem`  shipLocations
 
 -- move :: String -> Either String (Maybe [String])
 -- move msg = if checkIfGameOver msg then Right Nothing else move2 msg
 
 -- move2 :: String -> Either String (Maybe [String])
 -- move2 msg = do
---     pMsg <- process msg
+--     pMsg <- processMessageJson msg
 --     return $ formatResultToRequirement $ getAvailableMoves $ getCurrentStepMoves $ splitToMoves $ fromJust pMsg
 
 
