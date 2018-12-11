@@ -18,14 +18,6 @@ httpConnectorTests = testGroup "Http connector tests" [
         makeUrl NewGameInfo {gameId="<script>console.log(1)<script>", player = B}  @?= 
             "http://battleship.haskell.lt/game/<script>console.log(1)<script>/player/B"
     ,
-    -- testCase "Http get test" $
-    --     do
-    --         rez <- httpGet "http://battleship.haskell.lt/game/e=mc^2/player/B"
-    --         let exp = "[\"coord\",[\"B\",\"9\"],\"result\",null,\"prev\",null]"
-    --         if rez  == exp
-    --         then return ()
-    --         else assertFailure  $ "Test failure.\nExpected:\n" ++ exp ++  "\nGot:\n"++ rez
-    -- ,
     testCase "Simple http post test" $
         do
             rez <- httpPost "http://httpbin.org/post" "undefin"

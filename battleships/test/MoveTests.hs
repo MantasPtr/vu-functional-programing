@@ -38,7 +38,6 @@ moveTests = testGroup "High level move tests" [
         if retrieved2 == message2
             then return ()
             else assertFailure  $ "Test failure.\nExpected:\n" ++ show message2 ++  "\nGot:\n"++ show retrieved2
-    
     ]
 
 gameNameGen::  IO String

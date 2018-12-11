@@ -1,60 +1,52 @@
 module Player where 
 import Structures
-import Moves
+import MoveLogic
 import MessageController
 import MessageConnector
+import MessageUtils( myShots, enemyShots)
 import Data.List
 import Data.Maybe
 
 play:: String -> String -> IO String
 play gameStr playerStr = do
-    let myShips = shipLocations
+
     let player = getPlayer playerStr
     let gameInfo = NewGameInfo{gameId = gameStr, player = player}   
     case player of
-        A -> makeFirstMove shipLocations gameInfo
-        B -> playB shipLocations gameInfo
+        A -> makeFirstMove gameInfo
+        B -> playB gameInfo
         
 
-makeFirstMove :: [(String, String)] -> GameInfo  -> IO (String)
-makeFirstMove shipLocations gameInfo = do 
+makeFirstMove :: GameInfo  -> IO (String)
+makeFirstMove gameInfo = do 
     next <- nextHit
     let message = firstMessage next
     postMessage message gameInfo
-    playB shipLocations gameInfo
+    playB  gameInfo
 
-playB :: [(String, String)] -> GameInfo -> IO String
-playB myShips gameInfo = do
-    retrieved <- getMessage gameInfo
-    maybe (return "Won") ( \msg ->
-        do
-            let myShipsLeft = myShips \\ [msg]
-            let wasMyShipHit = wasHit msg
-            next <- nextHit
-            if null myShipsLeft then 
-                do
-                let loseMsg = appendLostMessage wasMyShipHit retrieved
-                postMessage loseMsg gameInfo
-                return "Lost"
-            else
-                do 
-                let nextMove = appendMessage next wasMyShipHit retrieved  
-                postMessage nextMove gameInfo
-                playB myShipsLeft gameInfo) (coord retrieved) 
-
-    
-    -- if isNothing (coord retrieved) then return "Won" else 
-    --     do
-    --         let myShipsLeft = myShips \\ coord retrieved
-    --         let wasMyShipHit = wasHit $ coord retrieved
-    --         next <- nextHit
-    --         if null myShipsLeft then 
-    --             do
-    --             let loseMsg = appendLostMessage wasMyShipHit retrieved
-    --             postMessage loseMsg gameInfo
-    --             return "Lost"
-    --         else
-    --             do 
-    --             let nextMove = appendMessage next wasMyShipHit retrieved  
-    --             postMessage nextMove gameInfo
-    --             playB myShipsLeft gameInfo
+playB :: GameInfo -> IO String
+playB gameInfo = do
+    retrievedMessage <- getMessage gameInfo
+    maybe (return "Won") 
+        ( \msg ->
+            do
+                let wasMyShipHit = wasHit msg
+                let myGuesses = myShots retrievedMessage
+                let myShipsLeftCount = myShipsLeft (enemyShots retrievedMessage)
+                putStrLn $ "Already shot " ++ show (length myGuesses) ++" times. Still have: " ++ show myShipsLeftCount ++ " ships!"
+                putStrLn "Already shot:"
+                print myGuesses
+                next <- nextHitSmart myGuesses
+                putStrLn "Next short:"
+                print next
+                if myShipsLeftCount == 0  then 
+                    do
+                    let loseMsg = appendLostMessage wasMyShipHit retrievedMessage
+                    postMessage loseMsg gameInfo
+                    return "Lost"
+                else
+                    do 
+                    let nextMove = appendMessage next wasMyShipHit retrievedMessage  
+                    postMessage nextMove gameInfo
+                    playB gameInfo)
+        (coord retrievedMessage) 

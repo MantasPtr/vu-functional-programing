@@ -12,12 +12,12 @@ module HttpConnector(makeUrl, httpGet, httpPost) where
     makeUrl :: GameInfo -> String;
     makeUrl (NewGameInfo gameId player) = baseUrl ++ "/game/" ++ gameId ++ "/player/" ++ show player 
 
-    httpGet :: String -> IO (String)
+    httpGet :: String -> IO String
     httpGet url = do
         response <- getWith getHeaders url
         return $ LBString.unpack $ response ^. responseBody
 
-    httpPost :: String -> String -> IO (Int)
+    httpPost :: String -> String -> IO Int
     httpPost url body = do
         response <- postWith postHeaders url (BString.pack body)
         return $ (response ^. responseStatus) ^. statusCode
