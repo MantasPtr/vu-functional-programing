@@ -34,11 +34,7 @@ playB gameInfo = do
                 let myGuesses = myShots retrievedMessage
                 let myShipsLeftCount = myShipsLeft (enemyShots retrievedMessage)
                 putStrLn $ "Already shot " ++ show (length myGuesses) ++" times. Still have: " ++ show myShipsLeftCount ++ " ships!"
-                putStrLn "Already shot:"
-                print myGuesses
                 next <- nextHitSmart myGuesses
-                putStrLn "Next short:"
-                print next
                 if myShipsLeftCount == 0  then 
                     do
                     let loseMsg = appendLostMessage wasMyShipHit retrievedMessage

@@ -17,5 +17,4 @@ tests = testGroup "Tests" [
     ,messageUtilsTests
     -- ,moveTests
     -- ,httpConnectorTests
-
     ]

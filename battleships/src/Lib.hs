@@ -22,7 +22,6 @@ readUserName = do
             putStrLn "Thats not a valid user name"
             readUserName
 
-
 readGameId :: IO String
 readGameId = do
     putStrLn "Were shall you fight?"
